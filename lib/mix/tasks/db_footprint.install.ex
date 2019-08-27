@@ -15,9 +15,9 @@ defmodule Mix.Tasks.DbFootprint.Install do
   end
 
   def copy_new_files(paths) do
-  	migration_path = Mix.Phoenix.context_app_path("db-footprint", "priv/repo/migrations/#{timestamp()}_create_versions.exs")
+  	migration_path = Mix.Phoenix.context_app_path(:db_footprint, "priv/repo/migrations/#{timestamp()}_create_versions.exs")
   	
-  	Mix.Phoenix.copy_from paths, "priv/templates/db_footprint.install.create_versions", binding, [
+  	Mix.Phoenix.copy_from paths, "priv/templates/db_footprint.install.create_versions", binding(), [
        {:eex, "migration.exs", migration_path},
      ]
   end

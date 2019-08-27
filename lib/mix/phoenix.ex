@@ -1,6 +1,6 @@
 defmodule Mix.Phoenix do
 	def generator_paths do
-    [".", :phoenix]
+    [".", :db_footprint]
   end
 
   def context_app_path(ctx_app, rel_path) when is_atom(ctx_app) do
