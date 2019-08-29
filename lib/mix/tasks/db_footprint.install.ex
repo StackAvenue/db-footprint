@@ -8,7 +8,7 @@ defmodule Mix.Tasks.DbFootprint.Install do
   """
 
   def run(_args) do
-    paths = Mix.Phoenix.generator_paths()
+    paths = Mix.DbFootprint.generator_paths()
 
     copy_new_files(paths)
     print_shell_instructions()
@@ -17,7 +17,7 @@ defmodule Mix.Tasks.DbFootprint.Install do
   def copy_new_files(paths) do
     #arg_1 = "ctx_app: discuss" (directory or project where this needs to be set up i.e root element of the project)
     #arg_2 = "rel_path: priv/repo/migrations/1567101445_create_versions.exs"
-    migration_path = Mix.Phoenix.context_app_path(:db_footprint, "priv/repo/migrations/#{timestamp()}_create_versions.exs")
+    migration_path = Mix.DbFootprint.context_app_path(:db_footprint, "priv/repo/migrations/#{timestamp()}_create_versions.exs")
 
     #migration_path = "priv/repo/migrations/1567101445_create_versions.exs"
     #IO.inspect("-------------------")
@@ -27,7 +27,7 @@ defmodule Mix.Tasks.DbFootprint.Install do
     #arg_3 = "binding: "
     #arg_4 = "[{:eex, "create_versions.ex", "priv/repo/migrations/1567101445_create_versions.exs"}]"
 
-    Mix.Phoenix.copy_from paths, "priv/templates/db_footprint.install", [], [
+    Mix.DbFootprint.copy_from paths, "priv/templates/db_footprint.install", [], [
        {:eex, "create_versions.ex", migration_path},
      ]
   end
