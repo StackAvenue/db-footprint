@@ -1,14 +1,15 @@
 defmodule DbFootprint.Install.CreateVersions do
-	use Ecto.Migration
+  use Ecto.Migration
 
   def change do
-  	create table(:versions) do
-  		add :item_type, :string
-  		add :item_id, :integer
-  		add :event, :string
-  		add :whodunnit, :string
-  		add :object, :text 
-  		timestamps()
-  	end
+    create table(:versions) do
+      add :item_type, :string, null: false
+      add :item_id, :integer, null: false
+      add :event, :string, null: false
+      add :whodunnit, :string
+      add :object, :text
+      timestamps()
+    end
+    create index(:versions, :item_type, :item_id)
   end
 end

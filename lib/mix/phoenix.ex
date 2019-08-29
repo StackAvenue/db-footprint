@@ -1,5 +1,5 @@
 defmodule Mix.Phoenix do
-	def generator_paths do
+  def generator_paths do
     [".", :db_footprint]
   end
 
@@ -23,7 +23,14 @@ defmodule Mix.Phoenix do
   end
 
   def copy_from(apps, source_dir, binding, mapping) when is_list(mapping) do
+    IO.inspect("-------------------fhjhfdjhj")
+    IO.inspect mapping
+    IO.inspect("&&&&&&")
+    IO.inspect apps
     roots = Enum.map(apps, &to_app_source(&1, source_dir))
+
+    IO.inspect("-------------------kkfkk")
+    IO.inspect roots
 
     for {format, source_file_path, target} <- mapping do
       source =

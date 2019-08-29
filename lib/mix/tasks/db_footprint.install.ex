@@ -1,35 +1,48 @@
 defmodule Mix.Tasks.DbFootprint.Install do
-	use Mix.Task
+  use Mix.Task
 
-	@shortdoc "Track changes to your models, for auditing or versioning"
+  @shortdoc "Track changes to your models, for auditing or versioning"
 
-	@moduledoc """
+  @moduledoc """
     This is where we would put any long form documentation or doctests.
   """
 
   def run(_args) do
-  	paths = Mix.Phoenix.generator_paths()
+    paths = Mix.Phoenix.generator_paths()
 
-  	copy_new_files(paths)
-  	print_shell_instructions()
+    copy_new_files(paths)
+    print_shell_instructions()
   end
 
   def copy_new_files(paths) do
-  	migration_path = Mix.Phoenix.context_app_path(:db_footprint, "priv/repo/migrations/#{timestamp()}_create_versions.exs")
-  	
-  	Mix.Phoenix.copy_from paths, "priv/templates/db_footprint.install.create_versions", binding(), [
-       {:eex, "migration.exs", migration_path},
+    #arg_1 = "ctx_app: discuss" (directory or project where this needs to be set up i.e root element of the project)
+    #arg_2 = "rel_path: priv/repo/migrations/1567101445_create_versions.exs"
+    migration_path = Mix.Phoenix.context_app_path(:db_footprint, "priv/repo/migrations/#{timestamp()}_create_versions.exs")
+
+    #migration_path = "priv/repo/migrations/1567101445_create_versions.exs"
+    #IO.inspect("-------------------")
+    #IO.inspect migration_path
+    #arg_1 = paths: [".", :db_footprint]
+    #arg_2 = "source_dir: priv/templates/db_footprint.install"
+    #arg_3 = "binding: "
+    #arg_4 = "[{:eex, "create_versions.ex", "priv/repo/migrations/1567101445_create_versions.exs"}]"
+
+    Mix.Phoenix.copy_from paths, "priv/templates/db_footprint.install", [], [
+       {:eex, "create_versions.ex", migration_path},
      ]
   end
 
   def print_shell_instructions() do
-  	Mix.shell.info """
+    Mix.shell.info """
       Remember to update your repository by running migrations:
           $ mix ecto.migrate
       """
   end
 
-  def timestamp do
-  	:os.system_time(:seconds)
-	end
+  defp timestamp do
+    {{y, m, d}, {hh, mm, ss}} = :calendar.universal_time()
+    "#{y}#{pad(m)}#{pad(d)}#{pad(hh)}#{pad(mm)}#{pad(ss)}"
+  end
+  defp pad(i) when i < 10, do: << ?0, ?0 + i >>
+  defp pad(i), do: to_string(i)
 end
