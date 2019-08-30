@@ -17,7 +17,7 @@ defmodule Mix.Tasks.DbFootprint.Install do
   def copy_new_files(paths) do
     #arg_1 = "ctx_app: discuss" (directory or project where this needs to be set up i.e root element of the project)
     #arg_2 = "rel_path: priv/repo/migrations/1567101445_create_versions.exs"
-    migration_path = Mix.DbFootprint.context_app_path(:db_footprint, "priv/repo/migrations/#{timestamp()}_create_versions.exs")
+    migration_path = Mix.DbFootprint.context_app_path(Mix.Project.config[:app], "priv/repo/migrations/#{timestamp()}_create_versions.exs")
 
     #migration_path = "priv/repo/migrations/1567101445_create_versions.exs"
     #IO.inspect("-------------------")
