@@ -12,6 +12,19 @@ has been destroyed.
 
 1. Add a `versions` table to your database:
 	```
+	Put following inside the deps function of mix.exs
+	{:db_footprint, git: "git@github.com:StackAvenue/db-footprint.git"}
+	```
+
+	```
+	mix deps.get
+	```
+
+	```
+	mix deps.compile
+	```
+	
+	```
     mix compile
     ```
 
@@ -23,7 +36,3 @@ has been destroyed.
     mix ecto.migrate
     ```
 
-### TODOS:
-
--> Fix, rerunning mix db_footprint handling
--> puts it in depts
