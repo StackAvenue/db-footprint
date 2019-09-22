@@ -8,9 +8,8 @@ defmodule Mix.Tasks.DbFootprint.Install do
   """
 
   def run(_args) do
-    paths = Mix.DbFootprint.generator_paths()
-
-    copy_new_files(paths)
+    Mix.DbFootprint.generator_paths()
+      |> copy_new_files()
     print_shell_instructions()
   end
 

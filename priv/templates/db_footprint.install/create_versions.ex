@@ -8,7 +8,7 @@ defmodule DbFootprint.Install.CreateVersions do
       add :event, :string, null: false
       add :whodunnit, :string
       add :object, :text
-      timestamps()
+      timestamps(updated_at: false)
     end
     create index(:versions, :item_type)
     create index(:versions, :item_id)
