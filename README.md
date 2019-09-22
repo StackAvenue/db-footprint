@@ -7,10 +7,10 @@ at any stage in its lifecycle, revert it to any version, or restore it after it
 has been destroyed.
 
 
-### 1.b. Installation
+### 1. Installation
 
 
-1. Add a `versions` table to your database:
+a. Add a `versions` table to your database:
 	```
 	Put following inside the deps function of mix.exs
 	{:db_footprint, git: "git@github.com:StackAvenue/db-footprint.git"}
