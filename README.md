@@ -10,7 +10,7 @@ has been destroyed.
 ### 1. Installation
 
 
-a. Add a `versions` table to your database:
+1. Add a `versions` table to your database:
 	```
 	Put following inside the deps function of mix.exs
 	{:db_footprint, git: "git@github.com:StackAvenue/db-footprint.git"}
