@@ -22,6 +22,32 @@ defmodule Mix.DbFootprint do
     Mix.Project.config |> Keyword.fetch!(:app)
   end
 
+  def new_copy_from(apps, source_dir, binding, mapping) when is_list(mapping) do
+    roots = Enum.map(apps, &to_app_source(&1, source_dir))
+
+    for {format, source_file_path, target} <- mapping do
+      source =
+        Enum.find_value(roots, fn root ->
+          source = Path.join(root, source_file_path)
+          if File.exists?(source), do: source
+        end) || raise "could not find #{source_file_path} in any of the sources"
+
+      IO.inspect("-------------------")
+      IO.inspect binding
+      [ head | _tail ] = binding
+      case format do
+        :text -> Mix.Generator.create_file(target, File.read!(source))
+        :eex  -> Mix.Generator.create_file(target, EEx.eval_file(source, table: head))
+        :new_eex ->
+          if File.exists?(target) do
+            :ok
+          else
+            Mix.Generator.create_file(target, EEx.eval_file(source, table: head))
+          end
+      end
+    end
+  end
+
   def copy_from(apps, source_dir, binding, mapping) when is_list(mapping) do
     roots = Enum.map(apps, &to_app_source(&1, source_dir))
 
