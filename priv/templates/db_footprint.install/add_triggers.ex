@@ -8,7 +8,7 @@ defmodule DbFootprint.Install.AddTriggers do
       $BODY$
       BEGIN
          INSERT INTO versions(item_type, item_id, event, inserted_at)
-         VALUES('employees', NEW.id, 'create', now());
+         VALUES('<%= table %>', NEW.id, 'create', now());
        
         RETURN NEW;
       END;
@@ -20,7 +20,7 @@ defmodule DbFootprint.Install.AddTriggers do
     execute "
        CREATE TRIGGER log_create_changes
        AFTER INSERT
-       ON employees
+       ON <%= table %>
        FOR EACH ROW
        EXECUTE PROCEDURE log_create_changes();
     "
@@ -34,7 +34,7 @@ defmodule DbFootprint.Install.AddTriggers do
       BEGIN
          IF NEW <> OLD THEN
              INSERT INTO versions(item_type, item_id, event, inserted_at, object)
-             VALUES('employees', OLD.id, 'update', now(), row_to_json(OLD));
+             VALUES('<%= table %>', OLD.id, 'update', now(), row_to_json(OLD));
          END IF;
        
          RETURN NEW;
@@ -47,7 +47,7 @@ defmodule DbFootprint.Install.AddTriggers do
     execute "
        CREATE TRIGGER log_update_changes
        AFTER UPDATE
-       ON employees
+       ON <%= table %>
        FOR EACH ROW
        EXECUTE PROCEDURE log_update_changes();
     "
@@ -60,7 +60,7 @@ defmodule DbFootprint.Install.AddTriggers do
       $BODY$
       BEGIN
          INSERT INTO versions(item_type, item_id, event, inserted_at, object)
-         VALUES('employees', OLD.id, 'destroy', now(), row_to_json(OLD));
+         VALUES('<%= table %>', OLD.id, 'destroy', now(), row_to_json(OLD));
        
         RETURN OLD;
       END;
@@ -72,7 +72,7 @@ defmodule DbFootprint.Install.AddTriggers do
     execute "
         CREATE TRIGGER log_delete_changes
         BEFORE DELETE
-        ON employees
+        ON <%= table %>
         FOR EACH ROW
         EXECUTE PROCEDURE log_delete_changes();
      "
@@ -85,8 +85,8 @@ defmodule DbFootprint.Install.AddTriggers do
   end
 
   def down do
-    execute "DROP TRIGGER IF EXISTS log_create_changes ON employees"
-    execute "DROP TRIGGER IF EXISTS log_update_changes ON employees"
-    execute "DROP TRIGGER IF EXISTS log_delete_changes ON employees"
+    execute "DROP TRIGGER IF EXISTS log_create_changes ON <%= table %>"
+    execute "DROP TRIGGER IF EXISTS log_update_changes ON <%= table %>"
+    execute "DROP TRIGGER IF EXISTS log_delete_changes ON <%= table %>"
   end
  end
