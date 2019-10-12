@@ -60,7 +60,7 @@ defmodule DbFootprint.Install.AddTriggers do
   def delete_trigger do
     <%= for table <- tables do %>
       execute "
-        CREATE OR REPLACE FUNCTION log_delete_changes()_<%= table %>
+        CREATE OR REPLACE FUNCTION log_delete_changes_<%= table %>()
         RETURNS trigger AS
         $BODY$
         BEGIN
