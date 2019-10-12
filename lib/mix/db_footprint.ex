@@ -34,15 +34,15 @@ defmodule Mix.DbFootprint do
 
       IO.inspect("-------------------")
       IO.inspect binding
-      [ head | _tail ] = binding
+      [ _head | _tail ] = binding
       case format do
         :text -> Mix.Generator.create_file(target, File.read!(source))
-        :eex  -> Mix.Generator.create_file(target, EEx.eval_file(source, table: head))
+        :eex  -> Mix.Generator.create_file(target, EEx.eval_file(source, tables: binding))
         :new_eex ->
           if File.exists?(target) do
             :ok
           else
-            Mix.Generator.create_file(target, EEx.eval_file(source, table: head))
+            Mix.Generator.create_file(target, EEx.eval_file(source, tables: binding))
           end
       end
     end
