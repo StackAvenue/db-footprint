@@ -4,7 +4,7 @@ defmodule DbFootprint.Install.AddTriggers do
   def create_trigger do
     <%= for table <- tables do %>
       execute "
-        CREATE OR REPLACE FUNCTION log_create_changes()
+        CREATE OR REPLACE FUNCTION log_create_changes_<%= table %>()
         RETURNS trigger AS
         $BODY$
         BEGIN
@@ -19,7 +19,7 @@ defmodule DbFootprint.Install.AddTriggers do
       "
 
       execute "
-         CREATE TRIGGER log_create_changes
+         CREATE TRIGGER log_create_changes_<%= table %>
          AFTER INSERT
          ON <%= table %>
          FOR EACH ROW
@@ -31,7 +31,7 @@ defmodule DbFootprint.Install.AddTriggers do
   def update_trigger do
     <%= for table <- tables do %>
       execute "
-        CREATE OR REPLACE FUNCTION log_update_changes()
+        CREATE OR REPLACE FUNCTION log_update_changes_<%= table %>()
         RETURNS trigger AS
         $BODY$
         BEGIN
@@ -48,7 +48,7 @@ defmodule DbFootprint.Install.AddTriggers do
       "
 
       execute "
-         CREATE TRIGGER log_update_changes
+         CREATE TRIGGER log_update_changes_<%= table %>
          AFTER UPDATE
          ON <%= table %>
          FOR EACH ROW
@@ -60,7 +60,7 @@ defmodule DbFootprint.Install.AddTriggers do
   def delete_trigger do
     <%= for table <- tables do %>
       execute "
-        CREATE OR REPLACE FUNCTION log_delete_changes()
+        CREATE OR REPLACE FUNCTION log_delete_changes()_<%= table %>
         RETURNS trigger AS
         $BODY$
         BEGIN
@@ -75,7 +75,7 @@ defmodule DbFootprint.Install.AddTriggers do
       "
       
       execute "
-          CREATE TRIGGER log_delete_changes
+          CREATE TRIGGER log_delete_changes_<%= table %>
           BEFORE DELETE
           ON <%= table %>
           FOR EACH ROW
@@ -92,9 +92,9 @@ defmodule DbFootprint.Install.AddTriggers do
 
   def down do
     <%= for table <- tables do %>
-      execute "DROP TRIGGER IF EXISTS log_create_changes ON <%= table %>"
-      execute "DROP TRIGGER IF EXISTS log_update_changes ON <%= table %>"
-      execute "DROP TRIGGER IF EXISTS log_delete_changes ON <%= table %>"
+      execute "DROP TRIGGER IF EXISTS log_create_changes_<%= table %> ON <%= table %>"
+      execute "DROP TRIGGER IF EXISTS log_update_changes_<%= table %> ON <%= table %>"
+      execute "DROP TRIGGER IF EXISTS log_delete_changes_<%= table %> ON <%= table %>"
     <% end %>
   end
  end
