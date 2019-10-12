@@ -23,7 +23,7 @@ defmodule DbFootprint.Install.AddTriggers do
          AFTER INSERT
          ON <%= table %>
          FOR EACH ROW
-         EXECUTE PROCEDURE log_create_changes_<%= table();
+         EXECUTE PROCEDURE log_create_changes_<%= table %>();
       "
     <% end %>
   end
@@ -52,7 +52,7 @@ defmodule DbFootprint.Install.AddTriggers do
          AFTER UPDATE
          ON <%= table %>
          FOR EACH ROW
-         EXECUTE PROCEDURE log_update_changes_<%= table();
+         EXECUTE PROCEDURE log_update_changes_<%= table %>();
       "
     <% end %>
   end
@@ -79,7 +79,7 @@ defmodule DbFootprint.Install.AddTriggers do
           BEFORE DELETE
           ON <%= table %>
           FOR EACH ROW
-          EXECUTE PROCEDURE log_delete_changes_<%= table();
+          EXECUTE PROCEDURE log_delete_changes_<%= table %>();
        "
      <% end %>
   end
