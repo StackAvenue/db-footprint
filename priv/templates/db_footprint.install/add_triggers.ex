@@ -2,80 +2,86 @@ defmodule DbFootprint.Install.AddTriggers do
   use Ecto.Migration
 
   def create_trigger do
-    execute "
-      CREATE OR REPLACE FUNCTION log_create_changes()
-      RETURNS trigger AS
-      $BODY$
-      BEGIN
-         INSERT INTO versions(item_type, item_id, event, inserted_at)
-         VALUES('<%= table %>', NEW.id, 'create', now());
-       
-        RETURN NEW;
-      END;
-      $BODY$
-      LANGUAGE plpgsql VOLATILE
-      COST 100
-    "
+    <%= for table <- tables do %>
+      execute "
+        CREATE OR REPLACE FUNCTION log_create_changes()
+        RETURNS trigger AS
+        $BODY$
+        BEGIN
+           INSERT INTO versions(item_type, item_id, event, inserted_at)
+           VALUES('<%= table %>', NEW.id, 'create', now());
+         
+          RETURN NEW;
+        END;
+        $BODY$
+        LANGUAGE plpgsql VOLATILE
+        COST 100
+      "
 
-    execute "
-       CREATE TRIGGER log_create_changes
-       AFTER INSERT
-       ON <%= table %>
-       FOR EACH ROW
-       EXECUTE PROCEDURE log_create_changes();
-    "
+      execute "
+         CREATE TRIGGER log_create_changes
+         AFTER INSERT
+         ON <%= table %>
+         FOR EACH ROW
+         EXECUTE PROCEDURE log_create_changes();
+      "
+    <% end %>
   end
 
   def update_trigger do
-    execute "
-      CREATE OR REPLACE FUNCTION log_update_changes()
-      RETURNS trigger AS
-      $BODY$
-      BEGIN
-         IF NEW <> OLD THEN
-             INSERT INTO versions(item_type, item_id, event, inserted_at, object)
-             VALUES('<%= table %>', OLD.id, 'update', now(), row_to_json(OLD));
-         END IF;
-       
-         RETURN NEW;
-      END;
-      $BODY$
-      LANGUAGE plpgsql VOLATILE
-      COST 100
-    "
+    <%= for table <- tables do %>
+      execute "
+        CREATE OR REPLACE FUNCTION log_update_changes()
+        RETURNS trigger AS
+        $BODY$
+        BEGIN
+           IF NEW <> OLD THEN
+               INSERT INTO versions(item_type, item_id, event, inserted_at, object)
+               VALUES('<%= table %>', OLD.id, 'update', now(), row_to_json(OLD));
+           END IF;
+         
+           RETURN NEW;
+        END;
+        $BODY$
+        LANGUAGE plpgsql VOLATILE
+        COST 100
+      "
 
-    execute "
-       CREATE TRIGGER log_update_changes
-       AFTER UPDATE
-       ON <%= table %>
-       FOR EACH ROW
-       EXECUTE PROCEDURE log_update_changes();
-    "
+      execute "
+         CREATE TRIGGER log_update_changes
+         AFTER UPDATE
+         ON <%= table %>
+         FOR EACH ROW
+         EXECUTE PROCEDURE log_update_changes();
+      "
+    <% end %>
   end
 
   def delete_trigger do
-    execute "
-      CREATE OR REPLACE FUNCTION log_delete_changes()
-      RETURNS trigger AS
-      $BODY$
-      BEGIN
-         INSERT INTO versions(item_type, item_id, event, inserted_at, object)
-         VALUES('<%= table %>', OLD.id, 'destroy', now(), row_to_json(OLD));
-       
-        RETURN OLD;
-      END;
-      $BODY$
-      LANGUAGE plpgsql VOLATILE
-      COST 100
-    "
-    
-    execute "
-        CREATE TRIGGER log_delete_changes
-        BEFORE DELETE
-        ON <%= table %>
-        FOR EACH ROW
-        EXECUTE PROCEDURE log_delete_changes();
-     "
+    <%= for table <- tables do %>
+      execute "
+        CREATE OR REPLACE FUNCTION log_delete_changes()
+        RETURNS trigger AS
+        $BODY$
+        BEGIN
+           INSERT INTO versions(item_type, item_id, event, inserted_at, object)
+           VALUES('<%= table %>', OLD.id, 'destroy', now(), row_to_json(OLD));
+         
+          RETURN OLD;
+        END;
+        $BODY$
+        LANGUAGE plpgsql VOLATILE
+        COST 100
+      "
+      
+      execute "
+          CREATE TRIGGER log_delete_changes
+          BEFORE DELETE
+          ON <%= table %>
+          FOR EACH ROW
+          EXECUTE PROCEDURE log_delete_changes();
+       "
+     <% end %>
   end
 
   def up do
@@ -85,8 +91,10 @@ defmodule DbFootprint.Install.AddTriggers do
   end
 
   def down do
-    execute "DROP TRIGGER IF EXISTS log_create_changes ON <%= table %>"
-    execute "DROP TRIGGER IF EXISTS log_update_changes ON <%= table %>"
-    execute "DROP TRIGGER IF EXISTS log_delete_changes ON <%= table %>"
+    <%= for table <- tables do %>
+      execute "DROP TRIGGER IF EXISTS log_create_changes ON <%= table %>"
+      execute "DROP TRIGGER IF EXISTS log_update_changes ON <%= table %>"
+      execute "DROP TRIGGER IF EXISTS log_delete_changes ON <%= table %>"
+    <% end %>
   end
  end
