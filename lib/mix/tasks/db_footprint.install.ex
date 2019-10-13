@@ -17,6 +17,7 @@ defmodule Mix.Tasks.DbFootprint.Install do
     #arg_1 = "ctx_app: discuss" (directory or project where this needs to be set up i.e root element of the project)
     #arg_2 = "rel_path: priv/repo/migrations/1567101445_create_versions.exs"
     migration_path = Mix.DbFootprint.context_app_path(Mix.Project.config[:app], "priv/repo/migrations/#{timestamp()}_create_versions.exs")
+    version_schema_path = Mix.DbFootprint.context_app_path(Mix.Project.config[:app], "lib/#{Atom.to_string(Mix.Project.config[:app])}/version.ex")
 
     #migration_path = "priv/repo/migrations/1567101445_create_versions.exs"
     #IO.inspect("-------------------")
@@ -28,6 +29,10 @@ defmodule Mix.Tasks.DbFootprint.Install do
 
     Mix.DbFootprint.copy_from paths, "priv/templates/db_footprint.install", [], [
        {:eex, "create_versions.ex", migration_path},
+     ]
+
+    Mix.DbFootprint.new_copy_from paths, "priv/templates/db_footprint.install", [Mix.DbFootprint.context_base(Mix.Project.config[:app])], [
+       {:eex, "version.ex", version_schema_path},
      ]
   end
 
