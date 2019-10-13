@@ -22,6 +22,10 @@ defmodule Mix.DbFootprint do
     Mix.Project.config |> Keyword.fetch!(:app)
   end
 
+  def context_base(ctx_app) do
+    app_base(ctx_app)
+  end
+
   def new_copy_from(apps, source_dir, binding, mapping) when is_list(mapping) do
     roots = Enum.map(apps, &to_app_source(&1, source_dir))
 
@@ -32,9 +36,6 @@ defmodule Mix.DbFootprint do
           if File.exists?(source), do: source
         end) || raise "could not find #{source_file_path} in any of the sources"
 
-      IO.inspect("-------------------")
-      IO.inspect binding
-      [ _head | _tail ] = binding
       case format do
         :text -> Mix.Generator.create_file(target, File.read!(source))
         :eex  -> Mix.Generator.create_file(target, EEx.eval_file(source, tables: binding))
@@ -70,6 +71,29 @@ defmodule Mix.DbFootprint do
       end
     end
   end
+
+  @spec camelize(String.t) :: String.t
+  def camelize(value), do: Macro.camelize(value)
+
+  @spec camelize(String.t, :lower) :: String.t
+  def camelize("", :lower), do: ""
+  def camelize(<<?_, t :: binary>>, :lower) do
+    camelize(t, :lower)
+  end
+  def camelize(<<h, _t :: binary>> = value, :lower) do
+    <<_first, rest :: binary>> = camelize(value)
+    <<to_lower_char(h)>> <> rest
+  end
+
+  defp app_base(app) do
+    case Application.get_env(app, :namespace, app) do
+      ^app -> app |> to_string |> camelize()
+      mod  -> mod |> inspect()
+    end
+  end
+
+  defp to_lower_char(char) when char in ?A..?Z, do: char + 32
+  defp to_lower_char(char), do: char
 
   defp to_app_source(path, source_dir) when is_binary(path),
     do: Path.join(path, source_dir)
