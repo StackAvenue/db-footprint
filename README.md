@@ -33,6 +33,10 @@ has been destroyed.
     ```
 
     ```
+    mix db_footprint.add_trigger table_name_1 table_name_2
+    ```
+
+    ```
     mix ecto.migrate
     ```
 
