@@ -85,6 +85,21 @@ defmodule Mix.DbFootprint do
     <<to_lower_char(h)>> <> rest
   end
 
+  def print_shell_instructions() do
+    Mix.shell.info """
+      Remember to update your repository by running migrations:
+          $ mix ecto.migrate
+      """
+  end
+
+  def timestamp do
+    {{y, m, d}, {hh, mm, ss}} = :calendar.universal_time()
+    "#{y}#{pad(m)}#{pad(d)}#{pad(hh)}#{pad(mm)}#{pad(ss)}"
+  end
+
+  defp pad(i) when i < 10, do: << ?0, ?0 + i >>
+  defp pad(i), do: to_string(i)
+
   defp app_base(app) do
     case Application.get_env(app, :namespace, app) do
       ^app -> app |> to_string |> camelize()
