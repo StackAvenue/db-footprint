@@ -26,29 +26,6 @@ defmodule Mix.DbFootprint do
     app_base(ctx_app)
   end
 
-  def new_copy_from(apps, source_dir, binding, mapping) when is_list(mapping) do
-    roots = Enum.map(apps, &to_app_source(&1, source_dir))
-
-    for {format, source_file_path, target} <- mapping do
-      source =
-        Enum.find_value(roots, fn root ->
-          source = Path.join(root, source_file_path)
-          if File.exists?(source), do: source
-        end) || raise "could not find #{source_file_path} in any of the sources"
-
-      case format do
-        :text -> Mix.Generator.create_file(target, File.read!(source))
-        :eex  -> Mix.Generator.create_file(target, EEx.eval_file(source, tables: binding))
-        :new_eex ->
-          if File.exists?(target) do
-            :ok
-          else
-            Mix.Generator.create_file(target, EEx.eval_file(source, tables: binding))
-          end
-      end
-    end
-  end
-
   def copy_from(apps, source_dir, binding, mapping) when is_list(mapping) do
     roots = Enum.map(apps, &to_app_source(&1, source_dir))
 
@@ -61,7 +38,12 @@ defmodule Mix.DbFootprint do
 
       case format do
         :text -> Mix.Generator.create_file(target, File.read!(source))
-        :eex  -> Mix.Generator.create_file(target, EEx.eval_file(source, binding))
+        :eex  ->
+          if length(binding) == 0 do
+            Mix.Generator.create_file(target, EEx.eval_file(source, binding))
+          else
+            Mix.Generator.create_file(target, EEx.eval_file(source, tables: binding))
+          end
         :new_eex ->
           if File.exists?(target) do
             :ok

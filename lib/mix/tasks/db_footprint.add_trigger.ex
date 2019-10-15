@@ -25,7 +25,7 @@ defmodule Mix.Tasks.DbFootprint.AddTrigger do
     #arg_4 = "[{:eex, "add_triggers.ex", "priv/repo/migrations/1567101445_add_triggers.exs"}]"
     #args = ["table_name_1", "table_name_2"]
 
-    DbFootprint.new_copy_from paths, "priv/templates/db_footprint.install", args, [
+    DbFootprint.copy_from paths, "priv/templates/db_footprint.install", args, [
        {:eex, "add_triggers.ex", migration_path},
      ]
   end

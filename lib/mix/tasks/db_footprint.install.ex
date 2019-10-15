@@ -33,7 +33,7 @@ defmodule Mix.Tasks.DbFootprint.Install do
        {:eex, "create_versions.ex", migration_path},
      ]
 
-    DbFootprint.new_copy_from paths, "priv/templates/db_footprint.install", [DbFootprint.context_base(Mix.Project.config[:app])], [
+    DbFootprint.copy_from paths, "priv/templates/db_footprint.install", [DbFootprint.context_base(Mix.Project.config[:app])], [
        {:eex, "version.ex", version_schema_path},
      ]
   end
